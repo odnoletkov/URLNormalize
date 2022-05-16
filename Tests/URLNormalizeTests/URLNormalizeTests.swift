@@ -43,6 +43,12 @@ final class URLNormalizeTests: XCTestCase {
             URL(string: "http://")!.normalized!.absoluteString,
             "http://"
         )
+
+        // Removing the default port
+        XCTAssertEqual(
+            URL(string: "http://example.com:80/")!.normalized!.absoluteString,
+            "http://example.com/"
+        )
     }
 }
 
@@ -55,6 +61,7 @@ extension URL {
         components.normalizeSchemeAndHostCase()
         components.normalizeDotSegments()
         components.normalizeEmptyPath()
+        components.normalizeDefaultPort()
         return components.url
     }
 }
@@ -89,6 +96,12 @@ extension URLComponents {
     mutating func normalizeEmptyPath() {
         if hasAuthority && path == "" {
             path = "/"
+        }
+    }
+
+    mutating func normalizeDefaultPort() {
+        if scheme == "http" || scheme == "https", port == 80 {
+            port = nil
         }
     }
 }
