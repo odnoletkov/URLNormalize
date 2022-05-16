@@ -28,6 +28,11 @@ final class URLNormalizeTests: XCTestCase {
             "http://example.com/~foo"
         )
 
+        // Removing dot-segments
+        XCTAssertEqual(
+            URL(string: "http://example.com/foo/./bar/baz/../qux")!.normalized!.absoluteString,
+            "http://example.com/foo/bar/qux"
+        )
     }
 }
 
@@ -38,6 +43,7 @@ extension URL {
         }
         components.normalizePercentEncodings()
         components.normalizeSchemeAndHostCase()
+        components.normalizeDotSegments()
         return components.url
     }
 }
@@ -55,5 +61,11 @@ extension URLComponents {
     mutating func normalizeSchemeAndHostCase() {
         scheme = scheme?.lowercased()
         host = host?.lowercased()
+    }
+
+    mutating func normalizeDotSegments() {
+        if let url = url, let cmps = URLComponents(url: url.standardized, resolvingAgainstBaseURL: false) {
+            self = cmps
+        }
     }
 }
