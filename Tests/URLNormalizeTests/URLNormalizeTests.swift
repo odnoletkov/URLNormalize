@@ -22,6 +22,12 @@ final class URLNormalizeTests: XCTestCase {
             "http://User@example.com/Foo"
         )
 
+        // Decoding percent-encoded triplets of unreserved characters
+        XCTAssertEqual(
+            URL(string: "http://example.com/%7Efoo")!.normalized!.absoluteString,
+            "http://example.com/~foo"
+        )
+
     }
 }
 
