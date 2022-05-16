@@ -16,6 +16,11 @@ final class URLNormalizeTests: XCTestCase {
             "http://us%2Fer:pass%2Fword@ex%2Fample.com/foo%3B?qu%5Eery#frag%5Ement"
         )
 
+        // Converting the scheme and host to lowercase
+        XCTAssertEqual(
+            URL(string: "HTTP://User@Example.COM/Foo")!.normalized!.absoluteString,
+            "http://User@example.com/Foo"
+        )
 
     }
 }
@@ -26,6 +31,7 @@ extension URL {
             return nil
         }
         components.normalizePercentEncodings()
+        components.normalizeSchemeAndHostCase()
         return components.url
     }
 }
@@ -38,5 +44,10 @@ extension URLComponents {
         path = path
         query = query
         fragment = fragment
+    }
+
+    mutating func normalizeSchemeAndHostCase() {
+        scheme = scheme?.lowercased()
+        host = host?.lowercased()
     }
 }
