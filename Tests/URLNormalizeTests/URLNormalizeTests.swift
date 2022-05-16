@@ -33,6 +33,16 @@ final class URLNormalizeTests: XCTestCase {
             URL(string: "http://example.com/foo/./bar/baz/../qux")!.normalized!.absoluteString,
             "http://example.com/foo/bar/qux"
         )
+
+        // Converting an empty path to a "/" path
+        XCTAssertEqual(
+            URL(string: "http://example.com")!.normalized!.absoluteString,
+            "http://example.com/"
+        )
+        XCTAssertEqual(
+            URL(string: "http://")!.normalized!.absoluteString,
+            "http://"
+        )
     }
 }
 
@@ -44,7 +54,14 @@ extension URL {
         components.normalizePercentEncodings()
         components.normalizeSchemeAndHostCase()
         components.normalizeDotSegments()
+        components.normalizeEmptyPath()
         return components.url
+    }
+}
+
+extension URLComponents {
+    var hasAuthority: Bool {
+        user?.isEmpty == false || password?.isEmpty == false || host?.isEmpty == false || port != nil
     }
 }
 
@@ -64,8 +81,14 @@ extension URLComponents {
     }
 
     mutating func normalizeDotSegments() {
-        if let url = url, let cmps = URLComponents(url: url.standardized, resolvingAgainstBaseURL: false) {
+        if !path.isEmpty, let url = url, let cmps = URLComponents(url: url.standardized, resolvingAgainstBaseURL: false) {
             self = cmps
+        }
+    }
+
+    mutating func normalizeEmptyPath() {
+        if hasAuthority && path == "" {
+            path = "/"
         }
     }
 }
