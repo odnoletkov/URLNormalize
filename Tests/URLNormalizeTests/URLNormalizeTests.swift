@@ -71,6 +71,28 @@ final class URLNormalizeTests: XCTestCase {
             URL(string: "http://example.com/bar.html#section1")!.normalized(options: .removingFragment)!.absoluteString,
             "http://example.com/bar.html"
         )
+        
+        // Replacing IP with domain name
+        
+        // Limiting protocols
+        
+        // Removing duplicate slashes
+        XCTAssertEqual(
+            URL(string: "http://example.com/foo//bar.html")!.normalized(options: .removingDuplicateSlashes)!.absoluteString,
+            "http://example.com/foo/bar.html"
+        )
+        XCTAssertEqual(
+            URL(string: "http://example.com/")!.normalized(options: .removingDuplicateSlashes)!.absoluteString,
+            "http://example.com/"
+        )
+        XCTAssertEqual(
+            URL(string: "http://example.com//")!.normalized(options: .removingDuplicateSlashes)!.absoluteString,
+            "http://example.com/"
+        )
+        XCTAssertEqual(
+            URL(string: "http://example.com/foo////bar/")!.normalized(options: .removingDuplicateSlashes)!.absoluteString,
+            "http://example.com/foo/bar/"
+        )
     }
 }
 
@@ -125,6 +147,9 @@ extension URLComponents {
         
         /// Removing the fragment
         static let removingFragment = Self(rawValue: 1 << 6)
+        
+        /// Removing duplicate slashes
+        static let removingDuplicateSlashes = Self(rawValue: 1 << 7)
     }
     
     mutating func normalize(options: Normalization) {
@@ -168,6 +193,15 @@ extension URLComponents {
         
         if options.contains(.removingFragment) {
             fragment = nil
+        }
+        
+        if options.contains(.removingDuplicateSlashes) {
+            if path != "/" {
+                path = (path as NSString)
+                    .pathComponents
+                    .map { $0 == "/" ? "" : $0 }
+                    .joined(separator: "/")
+            }
         }
     }
 }
