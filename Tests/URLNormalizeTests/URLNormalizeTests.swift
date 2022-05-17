@@ -101,6 +101,16 @@ final class URLNormalizeTests: XCTestCase {
             URL(string: "http://example.com/display?lang=en&article=fred")!.normalized(options: .sortingQueryParameters)!.absoluteString,
             "http://example.com/display?article=fred&lang=en"
         )
+        
+        // Removing unused query variables
+        
+        // Removing default query parameters
+        
+        // Removing the "?" when the query is empty
+        XCTAssertEqual(
+            URL(string: "http://example.com/display?")!.normalized(options: .removingEmptyQuery)!.absoluteString,
+            "http://example.com/display"
+        )
     }
 }
 
@@ -162,6 +172,9 @@ extension URLComponents {
         /// Sorting the query parameters
         /// Not guaranteed to be stable!
         static let sortingQueryParameters = Self(rawValue: 1 << 8)
+        
+        /// Removing the "?" when the query is empty
+        static let removingEmptyQuery = Self(rawValue: 1 << 9)
     }
     
     mutating func normalize(options: Normalization) {
@@ -219,6 +232,12 @@ extension URLComponents {
         if options.contains(.sortingQueryParameters) {
             queryItems = queryItems.map {
                 $0.sorted { $0.name < $1.name }
+            }
+        }
+        
+        if options.contains(.removingEmptyQuery) {
+            if query == "" {
+                query = nil
             }
         }
     }
