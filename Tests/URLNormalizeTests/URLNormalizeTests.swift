@@ -60,6 +60,17 @@ final class URLNormalizeTests: XCTestCase {
             URL(string: "http://example.com/foo")!.normalized(options: .addingTrailingSlash)!.absoluteString,
             "http://example.com/foo/"
         )
+        
+        
+        // Normalizations that change semantics
+        
+        // Removing directory index
+        
+        // Removing the fragment
+        XCTAssertEqual(
+            URL(string: "http://example.com/bar.html#section1")!.normalized(options: .removingFragment)!.absoluteString,
+            "http://example.com/bar.html"
+        )
     }
 }
 
@@ -85,6 +96,8 @@ extension URLComponents {
         
         let rawValue: Int
         
+        /// Normalizations that preserve semantics
+        
         /// Converting percent-encoded triplets to uppercase,
         /// Decoding percent-encoded triplets of unreserved characters
         static let percentEncodings = Self(rawValue: 1 << 0)
@@ -101,9 +114,17 @@ extension URLComponents {
         /// Removing the default port
         static let defaultPort = Self(rawValue: 1 << 4)
         
+        
+        /// Normalizations that usually preserve semantics
+        
         /// Adding a trailing "/" to a non-empty path
         static let addingTrailingSlash = Self(rawValue: 1 << 5)
         
+        
+        /// Normalizations that change semantics
+        
+        /// Removing the fragment
+        static let removingFragment = Self(rawValue: 1 << 6)
     }
     
     mutating func normalize(options: Normalization) {
@@ -143,6 +164,10 @@ extension URLComponents {
             if path.last != "/" {
                 path += "/"
             }
+        }
+        
+        if options.contains(.removingFragment) {
+            fragment = nil
         }
     }
 }
