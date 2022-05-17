@@ -51,10 +51,10 @@ final class URLNormalizeTests: XCTestCase {
             URL(string: "http://example.com:80/")!.normalized(options: .defaultPort)!.absoluteString,
             "http://example.com/"
         )
-
-
+        
+        
         // Normalizations that usually preserve semantics
-
+        
         // Adding a trailing "/" to a non-empty path
         XCTAssertEqual(
             URL(string: "http://example.com/foo")!.normalized(options: .addingTrailingSlash)!.absoluteString,
@@ -100,10 +100,10 @@ extension URLComponents {
         
         /// Removing the default port
         static let defaultPort = Self(rawValue: 1 << 4)
-
+        
         /// Adding a trailing "/" to a non-empty path
         static let addingTrailingSlash = Self(rawValue: 1 << 5)
-
+        
     }
     
     mutating func normalize(options: Normalization) {
@@ -138,7 +138,7 @@ extension URLComponents {
                 port = nil
             }
         }
-
+        
         if options.contains(.addingTrailingSlash) {
             if path.last != "/" {
                 path += "/"
