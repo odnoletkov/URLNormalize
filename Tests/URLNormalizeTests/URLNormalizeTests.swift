@@ -136,44 +136,54 @@ extension URLComponents {
         
         let rawValue: Int
         
-        /// Normalizations that preserve semantics
+        /// Normalizations that preserve semantics:
         
-        /// Converting percent-encoded triplets to uppercase,
-        /// Decoding percent-encoded triplets of unreserved characters
+        /// Converting percent-encoded triplets to uppercase.
+        /// Decoding percent-encoded triplets of unreserved characters.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let percentEncodings = Self(rawValue: 1 << 0)
         
-        /// Converting the scheme and host to lowercase
+        /// Converting the scheme and host to lowercase.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let schemeAndHostCase = Self(rawValue: 1 << 1)
         
-        /// Removing dot-segments
+        /// Removing dot-segments.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let dotSegments = Self(rawValue: 1 << 2)
         
-        /// Converting an empty path to a "/" path
+        /// Converting an empty path to a "/" path.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let emptyPath = Self(rawValue: 1 << 3)
         
-        /// Removing the default port
+        /// Removing the default port.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let defaultPort = Self(rawValue: 1 << 4)
         
         
-        /// Normalizations that usually preserve semantics
+        /// Normalizations that usually preserve semantics:
         
-        /// Adding a trailing "/" to a non-empty path
+        /// Adding a trailing "/" to a non-empty path.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let addingTrailingSlash = Self(rawValue: 1 << 5)
         
         
-        /// Normalizations that change semantics
+        /// Normalizations that change semantics:
         
-        /// Removing the fragment
+        /// Removing the fragment.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let removingFragment = Self(rawValue: 1 << 6)
         
-        /// Removing duplicate slashes
+        /// Removing duplicate slashes.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let removingDuplicateSlashes = Self(rawValue: 1 << 7)
         
-        /// Sorting the query parameters
+        /// Sorting the query parameters.
         /// Not guaranteed to be stable!
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let sortingQueryParameters = Self(rawValue: 1 << 8)
         
-        /// Removing the "?" when the query is empty
+        /// Removing the "?" when the query is empty.
+        /// From https://en.wikipedia.org/wiki/URI_normalization
         static let removingEmptyQuery = Self(rawValue: 1 << 9)
     }
     
