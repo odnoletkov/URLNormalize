@@ -112,6 +112,42 @@ final class URLNormalizeTests: XCTestCase {
             "http://example.com/display"
         )
     }
+    
+    /// https://github.com/sindresorhus/normalize-url
+    func testJSNormalize() {
+        XCTAssertEqual(
+            URL(string: "https://sindresorhus.com")!.normalized(options: .forceHTTP)!.absoluteString,
+            "http://sindresorhus.com"
+        )
+        XCTAssertEqual(
+            URL(string: "http://sindresorhus.com")!.normalized(options: .forceHTTPS)!.absoluteString,
+            "https://sindresorhus.com"
+        )
+        XCTAssertEqual(
+            URL(string: "http://user:password@sindresorhus.com")!.normalized(options: .stripAuthentication)!.absoluteString,
+            "http://sindresorhus.com"
+        )
+        XCTAssertEqual(
+            URL(string: "https://sindresorhus.com")!.normalized(options: .stripProtocol)!.absoluteString,
+            "//sindresorhus.com"
+        )
+        XCTAssertEqual(
+            URL(string: "http://www.sindresorhus.com")!.normalized(options: .stripWWW)!.absoluteString,
+            "http://sindresorhus.com"
+        )
+        XCTAssertEqual(
+            URL(string: "www.sindresorhus.com?foo=bar")!.normalized(options: .removeQueryParameters)!.absoluteString,
+            "www.sindresorhus.com"
+        )
+        XCTAssertEqual(
+            URL(string: "http://sindresorhus.com/redirect/")!.normalized(options: .removeTrailingSlash)!.absoluteString,
+            "http://sindresorhus.com/redirect"
+        )
+        XCTAssertEqual(
+            URL(string: "http://sindresorhus.com/")!.normalized(options: .removeTrailingSlash)!.absoluteString,
+            "http://sindresorhus.com"
+        )
+    }
 }
 
 extension URL {
@@ -185,6 +221,37 @@ extension URLComponents {
         /// Removing the "?" when the query is empty.
         /// From https://en.wikipedia.org/wiki/URI_normalization
         static let removingEmptyQuery = Self(rawValue: 1 << 9)
+        
+
+        /// JS normalizations:
+        
+        /// Force HTTP
+        /// From https://github.com/sindresorhus/normalize-url
+        static let forceHTTP = Self(rawValue: 1 << 10)
+        
+        /// Force HTTP
+        /// From https://github.com/sindresorhus/normalize-url
+        static let forceHTTPS = Self(rawValue: 1 << 11)
+        
+        /// Strip authentication
+        /// From https://github.com/sindresorhus/normalize-url
+        static let stripAuthentication = Self(rawValue: 1 << 12)
+        
+        /// Strip protocol (only http and https)
+        /// From https://github.com/sindresorhus/normalize-url
+        static let stripProtocol = Self(rawValue: 1 << 13)
+        
+        /// Strip www
+        /// From https://github.com/sindresorhus/normalize-url
+        static let stripWWW = Self(rawValue: 1 << 14)
+        
+        /// Remove query parameters
+        /// From https://github.com/sindresorhus/normalize-url
+        static let removeQueryParameters = Self(rawValue: 1 << 15)
+        
+        /// Remove trailing slash
+        /// From https://github.com/sindresorhus/normalize-url
+        static let removeTrailingSlash = Self(rawValue: 1 << 16)
     }
     
     mutating func normalize(options: Normalization) {
@@ -248,6 +315,45 @@ extension URLComponents {
         if options.contains(.removingEmptyQuery) {
             if query == "" {
                 query = nil
+            }
+        }
+        
+        if options.contains(.forceHTTP) {
+            if scheme == "https" {
+                scheme = "http"
+            }
+        }
+        
+        if options.contains(.forceHTTPS) {
+            if scheme == "http" {
+                scheme = "https"
+            }
+        }
+        
+        if options.contains(.stripAuthentication) {
+            user = nil
+            password = nil
+        }
+        
+        if options.contains(.stripProtocol) {
+            if scheme == "http" || scheme == "https" {
+                scheme = nil
+            }
+        }
+        
+        if options.contains(.stripWWW) {
+            if host?.hasPrefix("www.") ?? false {
+                host?.removeFirst(4)
+            }
+        }
+        
+        if options.contains(.removeQueryParameters) {
+            query = nil
+        }
+        
+        if options.contains(.removeTrailingSlash) {
+            if path.last == "/" {
+                path.removeLast()
             }
         }
     }
