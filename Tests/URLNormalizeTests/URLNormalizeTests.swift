@@ -93,6 +93,14 @@ final class URLNormalizeTests: XCTestCase {
             URL(string: "http://example.com/foo////bar/")!.normalized(options: .removingDuplicateSlashes)!.absoluteString,
             "http://example.com/foo/bar/"
         )
+        
+        // Removing or adding “www” as the first domain label
+        
+        // Sorting the query parameters
+        XCTAssertEqual(
+            URL(string: "http://example.com/display?lang=en&article=fred")!.normalized(options: .sortingQueryParameters)!.absoluteString,
+            "http://example.com/display?article=fred&lang=en"
+        )
     }
 }
 
@@ -150,6 +158,10 @@ extension URLComponents {
         
         /// Removing duplicate slashes
         static let removingDuplicateSlashes = Self(rawValue: 1 << 7)
+        
+        /// Sorting the query parameters
+        /// Not guaranteed to be stable!
+        static let sortingQueryParameters = Self(rawValue: 1 << 8)
     }
     
     mutating func normalize(options: Normalization) {
@@ -201,6 +213,12 @@ extension URLComponents {
                     .pathComponents
                     .map { $0 == "/" ? "" : $0 }
                     .joined(separator: "/")
+            }
+        }
+        
+        if options.contains(.sortingQueryParameters) {
+            queryItems = queryItems.map {
+                $0.sorted { $0.name < $1.name }
             }
         }
     }
