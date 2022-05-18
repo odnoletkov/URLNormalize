@@ -23,7 +23,7 @@ final class URLNormalizeTests: XCTestCase {
         // Converting the scheme and host to lowercase
         XCTAssertEqual(
             URLComponents(string: "HTTP://User@Example.COM/Foo")!
-                .normalized(options: .schemeAndHostCase).string!,
+                .normalized(options: .lowercaseSchemeAndHost).string!,
             "http://User@example.com/Foo"
         )
         
@@ -37,26 +37,26 @@ final class URLNormalizeTests: XCTestCase {
         // Removing dot-segments
         XCTAssertEqual(
             URLComponents(string: "http://example.com/foo/./bar/baz/../qux")!
-                .normalized(options: .dotSegments).string!,
+                .normalized(options: .removeDotSegments).string!,
             "http://example.com/foo/bar/qux"
         )
         
         // Converting an empty path to a "/" path
         XCTAssertEqual(
             URLComponents(string: "http://example.com")!
-                .normalized(options: .emptyPath).string!,
+                .normalized(options: .convertEmptyPath).string!,
             "http://example.com/"
         )
         XCTAssertEqual(
             URLComponents(string: "http://")!
-                .normalized(options: .emptyPath).string!,
+                .normalized(options: .convertEmptyPath).string!,
             "http://"
         )
         
         // Removing the default port
         XCTAssertEqual(
             URLComponents(string: "http://example.com:80/")!
-                .normalized(options: .defaultPort).string!,
+                .normalized(options: .removeDefaultPort).string!,
             "http://example.com/"
         )
         
@@ -66,7 +66,7 @@ final class URLNormalizeTests: XCTestCase {
         // Adding a trailing "/" to a non-empty path
         XCTAssertEqual(
             URLComponents(string: "http://example.com/foo")!
-                .normalized(options: .addingTrailingSlash).string!,
+                .normalized(options: .addTrailingSlash).string!,
             "http://example.com/foo/"
         )
         
@@ -78,7 +78,7 @@ final class URLNormalizeTests: XCTestCase {
         // Removing the fragment
         XCTAssertEqual(
             URLComponents(string: "http://example.com/bar.html#section1")!
-                .normalized(options: .removingFragment).string!,
+                .normalized(options: .removeFragment).string!,
             "http://example.com/bar.html"
         )
         
@@ -89,22 +89,22 @@ final class URLNormalizeTests: XCTestCase {
         // Removing duplicate slashes
         XCTAssertEqual(
             URLComponents(string: "http://example.com/foo//bar.html")!
-                .normalized(options: .removingDuplicateSlashes).string!,
+                .normalized(options: .removeDuplicateSlashes).string!,
             "http://example.com/foo/bar.html"
         )
         XCTAssertEqual(
             URLComponents(string: "http://example.com/")!
-                .normalized(options: .removingDuplicateSlashes).string!,
+                .normalized(options: .removeDuplicateSlashes).string!,
             "http://example.com/"
         )
         XCTAssertEqual(
             URLComponents(string: "http://example.com//")!
-                .normalized(options: .removingDuplicateSlashes).string!,
+                .normalized(options: .removeDuplicateSlashes).string!,
             "http://example.com/"
         )
         XCTAssertEqual(
             URLComponents(string: "http://example.com/foo////bar/")!
-                .normalized(options: .removingDuplicateSlashes).string!,
+                .normalized(options: .removeDuplicateSlashes).string!,
             "http://example.com/foo/bar/"
         )
         
@@ -113,7 +113,7 @@ final class URLNormalizeTests: XCTestCase {
         // Sorting the query parameters
         XCTAssertEqual(
             URLComponents(string: "http://example.com/display?lang=en&article=fred")!
-                .normalized(options: .sortingQueryParameters).string!,
+                .normalized(options: .sortQueryParameters).string!,
             "http://example.com/display?article=fred&lang=en"
         )
         
@@ -124,7 +124,7 @@ final class URLNormalizeTests: XCTestCase {
         // Removing the "?" when the query is empty
         XCTAssertEqual(
             URLComponents(string: "http://example.com/display?")!
-                .normalized(options: .removingEmptyQuery).string!,
+                .normalized(options: .removeEmptyQuery).string!,
             "http://example.com/display"
         )
     }
@@ -200,46 +200,46 @@ extension URLComponents {
         
         /// Converting the scheme and host to lowercase.
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let schemeAndHostCase = Self(rawValue: 1 << 1)
+        static let lowercaseSchemeAndHost = Self(rawValue: 1 << 1)
         
         /// Removing dot-segments.
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let dotSegments = Self(rawValue: 1 << 2)
+        static let removeDotSegments = Self(rawValue: 1 << 2)
         
         /// Converting an empty path to a "/" path.
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let emptyPath = Self(rawValue: 1 << 3)
+        static let convertEmptyPath = Self(rawValue: 1 << 3)
         
         /// Removing the default port.
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let defaultPort = Self(rawValue: 1 << 4)
+        static let removeDefaultPort = Self(rawValue: 1 << 4)
         
         
         /// Normalizations that usually preserve semantics:
         
         /// Adding a trailing "/" to a non-empty path.
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let addingTrailingSlash = Self(rawValue: 1 << 5)
+        static let addTrailingSlash = Self(rawValue: 1 << 5)
         
         
         /// Normalizations that change semantics:
         
         /// Removing the fragment.
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let removingFragment = Self(rawValue: 1 << 6)
+        static let removeFragment = Self(rawValue: 1 << 6)
         
         /// Removing duplicate slashes.
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let removingDuplicateSlashes = Self(rawValue: 1 << 7)
+        static let removeDuplicateSlashes = Self(rawValue: 1 << 7)
         
         /// Sorting the query parameters.
         /// Not guaranteed to be stable!
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let sortingQueryParameters = Self(rawValue: 1 << 8)
+        static let sortQueryParameters = Self(rawValue: 1 << 8)
         
         /// Removing the "?" when the query is empty.
         /// From https://en.wikipedia.org/wiki/URI_normalization
-        static let removingEmptyQuery = Self(rawValue: 1 << 9)
+        static let removeEmptyQuery = Self(rawValue: 1 << 9)
         
 
         /// JS normalizations:
@@ -283,40 +283,40 @@ extension URLComponents {
             fragment = fragment
         }
         
-        if options.contains(.schemeAndHostCase) {
+        if options.contains(.lowercaseSchemeAndHost) {
             scheme = scheme?.lowercased()
             host = host?.lowercased()
         }
         
-        if options.contains(.dotSegments) {
+        if options.contains(.removeDotSegments) {
             if !path.isEmpty, let url = url, let cmps = URLComponents(url: url.standardized, resolvingAgainstBaseURL: false) {
                 self = cmps
             }
         }
         
-        if options.contains(.emptyPath) {
+        if options.contains(.convertEmptyPath) {
             if hasAuthority && path == "" {
                 path = "/"
             }
         }
         
-        if options.contains(.defaultPort) {
+        if options.contains(.removeDefaultPort) {
             if scheme == "http" || scheme == "https", port == 80 {
                 port = nil
             }
         }
         
-        if options.contains(.addingTrailingSlash) {
+        if options.contains(.addTrailingSlash) {
             if path.last != "/" {
                 path += "/"
             }
         }
         
-        if options.contains(.removingFragment) {
+        if options.contains(.removeFragment) {
             fragment = nil
         }
         
-        if options.contains(.removingDuplicateSlashes) {
+        if options.contains(.removeDuplicateSlashes) {
             if path != "/" {
                 path = (path as NSString)
                     .pathComponents
@@ -325,13 +325,13 @@ extension URLComponents {
             }
         }
         
-        if options.contains(.sortingQueryParameters) {
+        if options.contains(.sortQueryParameters) {
             queryItems = queryItems.map {
                 $0.sorted { $0.name < $1.name }
             }
         }
         
-        if options.contains(.removingEmptyQuery) {
+        if options.contains(.removeEmptyQuery) {
             if query == "" {
                 query = nil
             }
