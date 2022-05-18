@@ -10,45 +10,53 @@ final class URLNormalizeTests: XCTestCase {
         
         // Converting percent-encoded triplets to uppercase
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/foo%2a")!.normalized(options: .percentEncodings).string!,
+            URLComponents(string: "http://example.com/foo%2a")!
+                .normalized(options: .percentEncodings).string!,
             "http://example.com/foo*"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://us%2fer:pass%2fword@ex%2fample.com/foo%3b?qu%5eery#frag%5ement")!.normalized(options: .percentEncodings).string!,
+            URLComponents(string: "http://us%2fer:pass%2fword@ex%2fample.com/foo%3b?qu%5eery#frag%5ement")!
+                .normalized(options: .percentEncodings).string!,
             "http://us%2Fer:pass%2Fword@ex%2Fample.com/foo%3B?qu%5Eery#frag%5Ement"
         )
         
         // Converting the scheme and host to lowercase
         XCTAssertEqual(
-            URLComponents(string: "HTTP://User@Example.COM/Foo")!.normalized(options: .schemeAndHostCase).string!,
+            URLComponents(string: "HTTP://User@Example.COM/Foo")!
+                .normalized(options: .schemeAndHostCase).string!,
             "http://User@example.com/Foo"
         )
         
         // Decoding percent-encoded triplets of unreserved characters
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/%7Efoo")!.normalized(options: .percentEncodings).string!,
+            URLComponents(string: "http://example.com/%7Efoo")!
+                .normalized(options: .percentEncodings).string!,
             "http://example.com/~foo"
         )
         
         // Removing dot-segments
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/foo/./bar/baz/../qux")!.normalized(options: .dotSegments).string!,
+            URLComponents(string: "http://example.com/foo/./bar/baz/../qux")!
+                .normalized(options: .dotSegments).string!,
             "http://example.com/foo/bar/qux"
         )
         
         // Converting an empty path to a "/" path
         XCTAssertEqual(
-            URLComponents(string: "http://example.com")!.normalized(options: .emptyPath).string!,
+            URLComponents(string: "http://example.com")!
+                .normalized(options: .emptyPath).string!,
             "http://example.com/"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://")!.normalized(options: .emptyPath).string!,
+            URLComponents(string: "http://")!
+                .normalized(options: .emptyPath).string!,
             "http://"
         )
         
         // Removing the default port
         XCTAssertEqual(
-            URLComponents(string: "http://example.com:80/")!.normalized(options: .defaultPort).string!,
+            URLComponents(string: "http://example.com:80/")!
+                .normalized(options: .defaultPort).string!,
             "http://example.com/"
         )
         
@@ -57,7 +65,8 @@ final class URLNormalizeTests: XCTestCase {
         
         // Adding a trailing "/" to a non-empty path
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/foo")!.normalized(options: .addingTrailingSlash).string!,
+            URLComponents(string: "http://example.com/foo")!
+                .normalized(options: .addingTrailingSlash).string!,
             "http://example.com/foo/"
         )
         
@@ -68,7 +77,8 @@ final class URLNormalizeTests: XCTestCase {
         
         // Removing the fragment
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/bar.html#section1")!.normalized(options: .removingFragment).string!,
+            URLComponents(string: "http://example.com/bar.html#section1")!
+                .normalized(options: .removingFragment).string!,
             "http://example.com/bar.html"
         )
         
@@ -78,19 +88,23 @@ final class URLNormalizeTests: XCTestCase {
         
         // Removing duplicate slashes
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/foo//bar.html")!.normalized(options: .removingDuplicateSlashes).string!,
+            URLComponents(string: "http://example.com/foo//bar.html")!
+                .normalized(options: .removingDuplicateSlashes).string!,
             "http://example.com/foo/bar.html"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/")!.normalized(options: .removingDuplicateSlashes).string!,
+            URLComponents(string: "http://example.com/")!
+                .normalized(options: .removingDuplicateSlashes).string!,
             "http://example.com/"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://example.com//")!.normalized(options: .removingDuplicateSlashes).string!,
+            URLComponents(string: "http://example.com//")!
+                .normalized(options: .removingDuplicateSlashes).string!,
             "http://example.com/"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/foo////bar/")!.normalized(options: .removingDuplicateSlashes).string!,
+            URLComponents(string: "http://example.com/foo////bar/")!
+                .normalized(options: .removingDuplicateSlashes).string!,
             "http://example.com/foo/bar/"
         )
         
@@ -98,7 +112,8 @@ final class URLNormalizeTests: XCTestCase {
         
         // Sorting the query parameters
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/display?lang=en&article=fred")!.normalized(options: .sortingQueryParameters).string!,
+            URLComponents(string: "http://example.com/display?lang=en&article=fred")!
+                .normalized(options: .sortingQueryParameters).string!,
             "http://example.com/display?article=fred&lang=en"
         )
         
@@ -108,7 +123,8 @@ final class URLNormalizeTests: XCTestCase {
         
         // Removing the "?" when the query is empty
         XCTAssertEqual(
-            URLComponents(string: "http://example.com/display?")!.normalized(options: .removingEmptyQuery).string!,
+            URLComponents(string: "http://example.com/display?")!
+                .normalized(options: .removingEmptyQuery).string!,
             "http://example.com/display"
         )
     }
@@ -116,35 +132,43 @@ final class URLNormalizeTests: XCTestCase {
     /// https://github.com/sindresorhus/normalize-url
     func testJSNormalize() {
         XCTAssertEqual(
-            URLComponents(string: "https://sindresorhus.com")!.normalized(options: .forceHTTP).string!,
+            URLComponents(string: "https://sindresorhus.com")!
+                .normalized(options: .forceHTTP).string!,
             "http://sindresorhus.com"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://sindresorhus.com")!.normalized(options: .forceHTTPS).string!,
+            URLComponents(string: "http://sindresorhus.com")!
+                .normalized(options: .forceHTTPS).string!,
             "https://sindresorhus.com"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://user:password@sindresorhus.com")!.normalized(options: .stripAuthentication).string!,
+            URLComponents(string: "http://user:password@sindresorhus.com")!
+                .normalized(options: .stripAuthentication).string!,
             "http://sindresorhus.com"
         )
         XCTAssertEqual(
-            URLComponents(string: "https://sindresorhus.com")!.normalized(options: .stripProtocol).string!,
+            URLComponents(string: "https://sindresorhus.com")!
+                .normalized(options: .stripProtocol).string!,
             "//sindresorhus.com"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://www.sindresorhus.com")!.normalized(options: .stripWWW).string!,
+            URLComponents(string: "http://www.sindresorhus.com")!
+                .normalized(options: .stripWWW).string!,
             "http://sindresorhus.com"
         )
         XCTAssertEqual(
-            URLComponents(string: "www.sindresorhus.com?foo=bar")!.normalized(options: .removeQueryParameters).string!,
+            URLComponents(string: "www.sindresorhus.com?foo=bar")!
+                .normalized(options: .removeQueryParameters).string!,
             "www.sindresorhus.com"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://sindresorhus.com/redirect/")!.normalized(options: .removeTrailingSlash).string!,
+            URLComponents(string: "http://sindresorhus.com/redirect/")!
+                .normalized(options: .removeTrailingSlash).string!,
             "http://sindresorhus.com/redirect"
         )
         XCTAssertEqual(
-            URLComponents(string: "http://sindresorhus.com/")!.normalized(options: .removeTrailingSlash).string!,
+            URLComponents(string: "http://sindresorhus.com/")!
+                .normalized(options: .removeTrailingSlash).string!,
             "http://sindresorhus.com"
         )
     }
