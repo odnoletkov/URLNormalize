@@ -135,8 +135,11 @@ public extension URLComponents {
         }
         
         if options.contains(.removeDefaultPort) {
-            if scheme == "http" || scheme == "https", port == 80 {
+            switch (scheme, port) {
+            case ("http", 80), ("https", 443), ("ftp", 21):
                 port = nil
+            default:
+                break
             }
         }
         
