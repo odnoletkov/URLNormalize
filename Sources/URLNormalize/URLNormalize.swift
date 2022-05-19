@@ -174,6 +174,12 @@ public extension URLComponents {
             }
         }
         
+        if options.contains(.normalizeProtocol) {
+            if scheme == nil {
+                scheme = "http"
+            }
+        }
+        
         if options.contains(.forceHTTP) {
             if scheme == "https" {
                 scheme = "http"
@@ -210,12 +216,6 @@ public extension URLComponents {
         if options.contains(.removeTrailingSlash) {
             if path.last == "/" {
                 path.removeLast()
-            }
-        }
-        
-        if options.contains(.normalizeProtocol) {
-            if scheme == nil {
-                scheme = "http"
             }
         }
     }

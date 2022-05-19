@@ -73,7 +73,7 @@ final class JSNormalizeTests: XCTestCase {
         XCTAssertNil(URLComponents(string: "sindresorhus.com "))
         XCTAssertEqual(URLComponents(string: "//sindresorhus.com.")!.normalized(options: .JSDefaults).string!, "http://sindresorhus.com.")
         XCTAssertEqual(URLComponents(string: "//SindreSorhus.com")!.normalized(options: .JSDefaults).string!, "http://sindresorhus.com")
-//        XCTAssertEqual(URLComponents(string: "//sindresorhus.com")!.normalized(options: .JSDefaults.union(.forceHTTPS)).string!, "https://sindresorhus.com")
+        XCTAssertEqual(URLComponents(string: "//sindresorhus.com")!.normalized(options: .JSDefaults.union(.forceHTTPS)).string!, "https://sindresorhus.com")
         XCTAssertEqual(URLComponents(string: "HTTP://sindresorhus.com")!.normalized(options: .JSDefaults).string!, "http://sindresorhus.com")
         XCTAssertEqual(URLComponents(string: "//sindresorhus.com")!.normalized(options: .JSDefaults).string!, "http://sindresorhus.com")
         XCTAssertEqual(URLComponents(string: "http://sindresorhus.com")!.normalized(options: .JSDefaults).string!, "http://sindresorhus.com")
