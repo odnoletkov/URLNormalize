@@ -101,6 +101,10 @@ public extension URLComponents {
         /// Remove trailing slash
         /// From https://github.com/sindresorhus/normalize-url
         static let removeTrailingSlash = Self(rawValue: 1 << 16)
+        
+        /// Normalize protocol
+        /// From https://github.com/sindresorhus/normalize-url
+        static let normalizeProtocol = Self(rawValue: 1 << 17)
     }
     
     mutating func normalize(options: Normalization) {
@@ -203,6 +207,12 @@ public extension URLComponents {
         if options.contains(.removeTrailingSlash) {
             if path.last == "/" {
                 path.removeLast()
+            }
+        }
+        
+        if options.contains(.normalizeProtocol) {
+            if scheme == nil {
+                scheme = "http"
             }
         }
     }

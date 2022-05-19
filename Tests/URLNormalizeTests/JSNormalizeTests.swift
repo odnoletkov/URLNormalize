@@ -45,5 +45,10 @@ final class JSNormalizeTests: XCTestCase {
                 .normalized(options: .removeTrailingSlash).string!,
             "http://sindresorhus.com"
         )
+        XCTAssertEqual(
+            URLComponents(string: "//sindresorhus.com:80/")!
+                .normalized(options: .normalizeProtocol).string!,
+            "http://sindresorhus.com:80/"
+        )
     }
 }
