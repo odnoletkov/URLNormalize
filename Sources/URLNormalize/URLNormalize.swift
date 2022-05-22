@@ -232,3 +232,12 @@ public extension URLComponents.Normalization {
         .removeTrailingSlash,
     ]
 }
+
+public extension URL {
+    func normalized(options: URLComponents.Normalization = .default) -> URL {
+        URLComponents(url: self, resolvingAgainstBaseURL: false)?
+            .normalized(options: options)
+            .url
+        ?? self
+    }
+}
