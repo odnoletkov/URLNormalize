@@ -1,7 +1,7 @@
 import Foundation
 
 public extension URLComponents {
-    func normalized(options: Normalization) -> URLComponents {
+    func normalized(options: Normalization = .default) -> URLComponents {
         var result = self
         result.normalize(options: options)
         return result
@@ -219,4 +219,16 @@ public extension URLComponents {
             }
         }
     }
+}
+
+public extension URLComponents.Normalization {
+    static let `default`: Self = [
+        .percentEncodings,
+        .lowercaseSchemeAndHost,
+        .removeDotSegments,
+        .removeDuplicateSlashes,
+        .sortQueryParameters,
+        .removeEmptyQuery,
+        .removeTrailingSlash,
+    ]
 }
